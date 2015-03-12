@@ -2,26 +2,24 @@
 #include <stdlib.h>
 #include <strings.h>
 
+int a[2];
 int *twoSum(int numbers[], int n, int target) 
 {
-	int *index = malloc(8192);
-	memset(index, 0, 8192);
+	int bitmap[40960];
 	int i;
 	for(i=0;i<n;i++)
 	{
-		*(index+numbers[i]+4096) = i;
+		bitmap[numbers[i]+100] = i;
 	}
 
 	int first,second;
 	for(first=0;first<n;first++)
 	{
-		if(*(index+(target-numbers[first]+4096)))
+		if(bitmap[target-numbers[first]+100])
 		{
-			second = *(index+(target-numbers[first]+4096));
-			int *a = malloc(2);
-			memset(a, 0, 2);
-			*a = first;
-			*(a+1) = second;
+			second = bitmap[target-numbers[first]+100];
+			a[0] = first+1;
+			a[1] = second+1;
 			return a;
 		}
 	}
@@ -33,7 +31,7 @@ int main()
 	int data[5] = {-1,-2,-3,-4,-5};
 	int target = -8;
 	int *index = twoSum(data, 5, target);
-	printf("index:%d,%d;cal:%d+%d=%d", *index, *(index+1), data[*index], data[*(index+1)], target);
+	printf("index:%d,%d;cal:%d+%d=%d", *index, *(index+1), data[*index-1], data[*(index+1)-1], target);
 	return 0;
 }
 
