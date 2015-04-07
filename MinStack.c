@@ -1,172 +1,106 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef struct linkedListNode {
+	int val;
+	struct linkedListNode * next;
+} linkedListNode;
 
 typedef struct {
-	int * ptrData;
-	int szData;
-	int * ptrMin;
-	int szMin;
-	int stackSize;
+	linkedListNode * ptrData;
+	linkedListNode * ptrMin;
 } MinStack;
 
+linkedListNode * linkedListPush (linkedListNode * node, int val) {
+	linkedListNode *newNode = (linkedListNode *) calloc(1, sizeof(linkedListNode));
+	newNode->val = val;
+	newNode->next = node;
+
+	node = newNode;
+
+	return node;
+}
+
+linkedListNode * linkedListPop (linkedListNode * node) {
+	linkedListNode *lastNode = node;
+	node = node->next;
+	free(lastNode);
+	return node;
+}
+
+void linkedListFree (linkedListNode * node) {
+	while(node->next != NULL) {
+		node = linkedListPop(node);
+	}
+}
+
+linkedListNode * minStackMinPush(linkedListNode *node, int element) {
+	if(node == NULL || element <= node->val) {
+		node = linkedListPush(node, element);
+	}
+	return node;
+}
+
+linkedListNode * minStackMinPop(linkedListNode *node) {
+	return linkedListPop(node);
+}
+
 void minStackCreate(MinStack *stack, int maxSize) {
-	stack->ptrData = calloc(1, maxSize + 100000); 
-	stack->szData = 0;
-	stack->ptrMin = calloc(1, maxSize + 100000); 
-	stack->szMin = 0;
-	stack->stackSize = maxSize;
-}
-
-void minStackPushMin(MinStack *stack, int element) {
-	if(stack->szMin >= stack->szData)
-		return;
-
-	if(element <= stack->ptrMin[stack->szMin] || stack->szMin == 0) {
-		stack->szMin++;
-		stack->ptrMin[stack->szMin] = element;
-	}
-}
-
-void minStackPopMin(MinStack *stack, int element) {
-	if(element <= stack->ptrMin[stack->szMin]) {
-		stack->szMin--;
-	}
+	stack->ptrData = NULL;
+	stack->ptrMin = NULL;
 }
 
 void minStackPush(MinStack *stack, int element) {
-	if(stack->szData >= stack->stackSize)
-		return;
-
-	stack->szData++;
-	stack->ptrData[stack->szData] = element;
-
-	minStackPushMin(stack, element);
+	stack->ptrMin = minStackMinPush(stack->ptrMin, element);
+	stack->ptrData = linkedListPush(stack->ptrData, element);
 }
 
 void minStackPop(MinStack *stack) {
-	minStackPopMin(stack, stack->ptrData[stack->szData]);
-	stack->szData--;
+	if(stack->ptrData->val <= stack->ptrMin->val) {
+		stack->ptrMin = minStackMinPop(stack->ptrMin);
+	}
+	stack->ptrData = linkedListPop(stack->ptrData);
 }
 
 int minStackTop(MinStack *stack) {
-	return stack->ptrData[stack->szData];
+	return stack->ptrData->val;
 }
 
 int minStackGetMin(MinStack *stack) {
-	return stack->ptrMin[stack->szMin];
+	return stack->ptrMin->val;
 }
 
 void minStackDestroy(MinStack *stack) {
-	free(stack->ptrData);
-	free(stack->ptrMin);
+	linkedListFree(stack->ptrData);
+	linkedListFree(stack->ptrMin);
 }
 
-int main()
-{
-	MinStack ms;
-	minStackCreate(&ms, 100000);
+int main() {
+	MinStack stack;
+	minStackCreate(&stack, 10);
+	//int i;
+	//for (i = 0; i < 5; i++) {
+	//	minStackPush(&stack, i);
+	//}
 
-	minStackPush(&ms, -10);
-	minStackPush(&ms, -9);
-	minStackPush(&ms, -8);
-	minStackPush(&ms, -7);
-	minStackPush(&ms, -6);
-	minStackPush(&ms, -5);
-	minStackPush(&ms, -4);
-	minStackPush(&ms, -3);
-	minStackPush(&ms, -2);
-	minStackPush(&ms, -1);
-	minStackPush(&ms, 0);
-	minStackPush(&ms, 1);
-	minStackPush(&ms, 2);
-	minStackPush(&ms, 3);
-	minStackPush(&ms, 4);
-	minStackPush(&ms, 5);
-	minStackPush(&ms, 6);
-	minStackPush(&ms, 7);
-	minStackPush(&ms, 8);
-	minStackPush(&ms, 9);
-	minStackPush(&ms, 10);
-	minStackPush(&ms, 11);
-	minStackPush(&ms, 12);
-	minStackPush(&ms, 13);
-	minStackPush(&ms, 14);
-	minStackPush(&ms, 15);
-	minStackPush(&ms, 16);
-	minStackPush(&ms, 17);
-	minStackPush(&ms, 18);
-	minStackPush(&ms, 19);
-	minStackPush(&ms, 20);
-	minStackPush(&ms, 21);
+	//printf("top: %d\n", minStackTop(&stack));
+	//printf("min: %d\n", minStackGetMin(&stack));
 
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
-	minStackPop(&ms);
-	printf("%d\n", minStackGetMin(&ms));
+	//for (i = 1; i < 5; i++) {
+	//	minStackPush(&stack, -i);
+	//}
 
-	minStackDestroy(&ms);
+	//printf("top: %d\n", minStackTop(&stack));
+	//printf("min: %d\n", minStackGetMin(&stack));
+
+	minStackPush(&stack, 0);
+	minStackPush(&stack, 1);
+	minStackPush(&stack, 0);
+	printf("min: %d\n", minStackGetMin(&stack));
+	minStackPop(&stack);
+	printf("min: %d\n", minStackGetMin(&stack));
+
+	minStackDestroy(&stack);
+
 	return 0;
 }
