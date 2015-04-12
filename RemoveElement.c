@@ -1,28 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define elemn 6
+#define elemn 3
 
 int removeElement(int A[], int n, int elem) {
-	int i;
-	int resultLen = 0;
-	int * B = calloc(n, sizeof(int));
+	int i = 0;
 	for(i=0;i<n;i++) {
-		if(A[i] != elem) {
-			B[resultLen] = A[i];
-			resultLen++;
-		}
+		if(A[i] == elem) {
+			A[i] = A[n-1];
+			i--;
+			n--;
+		} 
 	}
-
-	for(i=0;i<resultLen;i++) {
-		A[i] = B[i];
-	}
-	return resultLen;
+	return n;
 }
 
 int main() {
-	int A[elemn] = {0,2,4,3,0,0};
-	int elem = 4;
+	int A[elemn] = {2,2,3};
+	int elem = 2;
 	int result = removeElement(A, elemn, elem);
 
 	printf("%d\n", result);
